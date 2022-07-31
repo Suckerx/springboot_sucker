@@ -9,14 +9,14 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.sucker</groupId>
-    <artifactId>RetireInfoSys</artifactId>
+    <artifactId>springboot_sucker</artifactId>
     <packaging>pom</packaging>
     <modules>
         <module>service</module>
         <module>common</module>
     </modules>
     <version>0.0.1-SNAPSHOT</version>
-    <name>RetireInfoSys</name>
+    <name>springboot_sucker</name>
     <description>Demo project for Spring Boot</description>
 
 

@@ -5,6 +5,7 @@ import com.sucker.shiroservice.config.AuthToken;
 import com.sucker.shiroservice.entity.Perms;
 import com.sucker.shiroservice.entity.User;
 import com.sucker.shiroservice.service.UserService;
+import com.sucker.shiroservice.utils.RedisUtils;
 import com.sucker.shiroservice.utils.TokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -16,6 +17,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -78,6 +80,23 @@ public class CustomerRealm extends AuthorizingRealm {
         String id = tokenPayLoad.getClaim("id").asString();
         log.info("jwt解析的id是"+id);
 
+        //通过redis取得 token
+        RedisTemplate redisTemplate= RedisUtils.redis;
+        String tokenInRedis = (String) redisTemplate.opsForValue().get(id);
+
+        //判断redis种的token
+        if (tokenInRedis == null){
+            log.error("token失效，请重新登录");
+            throw new IncorrectCredentialsException("token失效，请重新登录");
+        }
+        log.info("redis里面的token"+tokenInRedis);
+        if (!tokenInRedis.equals(useToken.getPrincipal().toString()))
+        {
+            log.error("token错误");
+            throw new IncorrectCredentialsException("token错误");
+        }
+
+        //redis中验证成功后，校验数据库中是否存在该用户
         try {
             user = userService.getUserById(id);
             log.info("查找的user="+user);
@@ -87,7 +106,7 @@ public class CustomerRealm extends AuthorizingRealm {
         }
 
         //用户名认证
-        if (user==null || (!user.getUserId().equals("1"))){
+        if (user==null){
             System.out.println("用户查找失败！");
             return null;//抛出异常
         }
