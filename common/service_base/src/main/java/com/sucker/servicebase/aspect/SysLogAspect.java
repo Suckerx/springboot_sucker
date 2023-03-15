@@ -11,7 +11,6 @@ import com.sucker.commonutils.R;
 import com.google.gson.Gson;
 import com.sucker.servicebase.annotation.SysLog;
 import com.sucker.servicebase.entity.SysLogEntity;
-import com.sucker.servicebase.entity.User;
 import com.sucker.servicebase.service.SysLogService;
 import com.sucker.servicebase.utils.HttpContextUtil;
 import com.sucker.servicebase.utils.IPUtils;
